@@ -1,0 +1,667 @@
+<div class="row">
+    <div class="col-lg-12">
+        <ol class="ibox-title breadcrumb">
+            <li>
+                <a>{{parentPage}}</a>
+            </li>
+            <li class="active">
+                <strong>{{currentPage}}</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12" style="padding-bottom: 20px;">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{{currentPage}}</h5>
+                <div style="margin:0 auto;margin-bottom:5px; text-align: right">
+                    <!-- <button class="btn btn-danger" (click)="exportCSV()">
+                        <i class="fa fa-file-excel-o"> Excel</i>
+                    </button> -->
+                    <!-- <button class="btn btn-success" (click)="refresh()">
+                        <i class="fa fa-refresh"></i>
+                    </button> -->
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <div>
+                                <a *ngIf="isAdd" class="btn btn-primary" (click)="openModel(template)">
+                                    <i class="fa fa-file-o"></i> Tạo mới</a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Tỉnh thành</label>
+                            <p-dropdown styleClass="select-input form-control" [options]="provinces"
+                                [(ngModel)]="filterSelectedProvince" [style]="{'width':'100%'}" filter="filter"
+                                (onChange)="changeFilter()">
+                            </p-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Kích hoạt TK</label>
+                            <p-dropdown styleClass="select-input form-control" [options]="isAccept"
+                                [(ngModel)]="selectedIsAccept" [style]="{'width':'100%'}" filter="filter"
+                                (onChange)="changeIsAccept()">
+                            </p-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <div>
+                                <!-- <input #filterGb type="text" placeholder="Nhập chuỗi cần tìm ..." class="input-sm form-control" id="filter" /> -->
+                                <input #txtSearch type="text" placeholder="Nhập chuỗi cần tìm ..."
+                                    class="input-sm form-control" id="filter" (keydown.Enter)="eventEnterSearch()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p-table #dt [value]="datasource" [responsive]="true" [rows]="pageSize" [lazy]="true"
+                            [totalRecords]="totalRecords" dataKey="id" scrollable="true" scrollHeight="550px"
+                            [alwaysShowPaginator]="true" [paginator]="true" [rowsPerPageOptions]="[20,50,100]"
+                            (onPage)="onPageChange($event)">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="text-align: center; width: 207px;">Thao tác</th>
+                                    <th class="p-col-normal" pSortableColumn="code">Mã
+                                        <p-sortIcon field="code"></p-sortIcon>
+                                    </th>
+                                    <th class="p-col-note">Tên</th>
+                                    <th class="p-col-normal">Điện thoại</th>
+                                    <th class="p-col-address">Địa chỉ</th>
+                                    <th class="p-col-note">Hình thức thanh toán</th>
+                                    <th class="p-col-note">TT/CN/Trạm nhận</th>
+                                    <th class="p-col-note">Nhân viên kinh doanh</th>
+                                    <th class="p-col-note">Nhân viên cskh</th>
+                                    <th class="p-col-note">Nhân viên công nợ</th>
+                                    <th class="p-col-normal">Mã kết nối</th>
+                                    <th class="p-col-note">Ngày ký hợp đồng</th>
+                                    <th class="p-col-note">Ngày hết hạn hợp đồng</th>
+                                    <th class="p-col-note">NGười ký hợp đồng</th>
+                                    <th class="p-col-note">Chức danh người ký hợp</th>
+                                    <th class="p-col-note">Điện thoại công ty</th>
+                                    <th class="p-col-note">Email công ty</th>
+                                    <th class="p-col-note">% hoa hồng khách</th>
+                                    <th class="p-col-note">Ngành Nghề</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-data>
+                                <tr>
+                                    <td style="width: 207px;">
+                                        <a *ngIf="isEdit" class="btn btn-info" (click)="openModel(template, data)">
+                                            <i class="fa fa-paste"></i> Xem</a>
+                                        <a *ngIf="isDelete" class="btn btn-danger"
+                                            (click)="openDeleteModel(templateDelete, data)">
+                                            <i class="fa fa-trash-o"></i>
+                                            <span class="bold">Xóa</span>
+                                        </a>
+                                        <a class="btn btn-success" *ngIf="isEdit && data.isAccept === false">
+                                            <i class="fa fa-check"></i>
+                                            <span class="bold" (click)="openAcceptModel(templateAccept, data)">Xác
+                                                nhận</span>
+                                        </a>
+                                        <a class="btn btn-warning" *ngIf="isEdit && data.isAccept === true">
+                                            <i class="fa fa-cogs" (click)="openAcceptModel(templateAccept, data)"></i>
+                                        </a>
+                                    </td>
+                                    <td class="p-col-normal">{{data.code}}</td>
+                                    <td class="p-col-note">{{data.name}}</td>
+                                    <td class="p-col-normal">{{data.phoneNumber}}</td>
+                                    <td class="p-col-address">{{data.address}}</td>
+                                    <td class="p-col-note">{{data.paymentType?.name}}</td>
+                                    <td class="p-col-note">{{data.hub?.name}}</td>
+                                    <td class="p-col-note">{{data.salesUser?.fullName}}</td>
+                                    <td class="p-col-note">{{data.supportUser?.fullName}}</td>
+                                    <td class="p-col-note">{{data.accountingUser?.fullName}}</td>
+                                    <td class="p-col-normal">{{data.vseOracleCode}}</td>
+                                    <td class="p-col-note">{{data.startDate | date:'dd/MM/yyyy'}}</td>
+                                    <td class="p-col-note">{{data.endDate | date:'dd/MM/yyyy'}}</td>
+                                    <td class="p-col-note">{{data.signName}}</td>
+                                    <td class="p-col-note">{{data.signRole}}</td>
+                                    <td class="p-col-note">{{data.companyPhone}}</td>
+                                    <td class="p-col-note">{{data.companyEmail}}</td>
+                                    <td class="p-col-note">{{data.commissionCus}}</td>
+                                    <td class="p-col-note">{{data.professions}}</td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="summary">
+                                <span class="ui-column-title" style="font-weight: bold;">Tổng : {{ (totalRecords) ?
+                                    totalRecords
+                                    : 0}} khách hàng</span>
+                            </ng-template>
+                        </p-table>
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Start Modal-->
+<ng-template #templateDepartment>
+    <div class="modal-header" style="padding: 5px; text-align:left;">
+        <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;"
+            (click)="bsModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+        <h5 class="modal-title" style="font-size:20px">Danh sách phòng ban</h5>
+    </div>
+    <div class="modal-body" style="overflow: inherit;">
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="form-group">
+                    <label>Mã phòng ban</label>
+                    <input placeholder="Mã phòng ban" class="input-sm form-control" type="text"
+                        [(ngModel)]="departmentCode"
+                        [ngStyle]="{'border': errorDepartmentCode ? '1px solid red' : 'none'}">
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="form-group">
+                    <label>Tên phòng ban</label>
+                    <input placeholder="Tên phòng ban" class="input-sm form-control" type="text"
+                        [(ngModel)]="departmentName" focus="true"
+                        [ngStyle]="{'border': errorDepartmentName ? '1px solid red' : 'none'}">
+                </div>
+            </div>
+            <div class="col-lg-2" style="margin-top: 18px;">
+                <div class="form-group">
+                    <label></label>
+                    <button *ngIf="isAdd" class="btn btn-primary" style="width: 62px;"
+                        (click)="saveCusDepartment()">{{textButtonSave}}</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="form-group">
+                    <label>Tên người đại diện</label>
+                    <input placeholder="Tên người đại diện" [(ngModel)]="departmentRepresentativeName"
+                        class="input-sm form-control" type="text">
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input placeholder="Số điện thoại" [(ngModel)]="departmentPhoneNumber" class="input-sm form-control"
+                        type="text">
+                </div>
+            </div>
+            <div class="col-lg-2" style="margin-top: 18px;">
+                <div class="form-group">
+                    <label></label>
+                    <!-- <button class="btn btn-primary" style="width: 62px;" (click)="saveCusDepartment()">{{textButtonSave}}</button> -->
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 20px;">
+            <div class="col-lg-5">
+                <div class="form-group">
+                    <label>Địa chỉ</label>
+                    <!-- <input placeholder="Địa chỉ" [(ngModel)]="departmentAddress" class="input-sm form-control" type="text"  autocorrect="off"
+                        autocapitalize="off" spellcheck="off" type="text" googleplace (setAddress)="setAddressDepartment($event)"> -->
+                    <input placeholder="Địa chỉ" autocorrect="off" autocapitalize="off" spellcheck="off" type="text"
+                        class="input-sm form-control" [id]="departmentAddressId" [(ngModel)]="departmentAddress">
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="form-group">
+                    <!-- <label>Số điện thoại</label> -->
+                    <!-- <input placeholder="Số điện thoại" class="input-sm form-control" type="text" focus="true" > -->
+                </div>
+            </div>
+            <div class="col-lg-2" style="margin-top: 18px;">
+                <div class="form-group">
+                    <label></label>
+                    <!-- <button class="btn btn-primary" style="width: 62px;" (click)="saveCusDepartment()">{{textButtonSave}}</button> -->
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 no-padding">
+                <p-table [value]="lstCusDepartment" [paginator]="true" [rows]="10" [responsive]="true"
+                    [rowsPerPageOptions]="[10, 20, 50, 100]" [totalRecords]="totalCusDepartment">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Mã phòng ban</th>
+                            <th>Tên phòng ban</th>
+                            <th>Tên người đại diện</th>
+                            <th>Số điện thoại</th>
+                            <th>Địa chỉ</th>
+                            <th style="width: 120px"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData>
+                        <tr>
+                            <td>{{rowData.code}}</td>
+                            <td>{{rowData.name}}</td>
+                            <td>{{rowData.representativeName}}</td>
+                            <td>{{rowData.phoneNumber}}</td>
+                            <td>{{rowData.address}}</td>
+                            <td>
+                                <a class="btn btn-info" (click)="editCusDepartment(rowData)">
+                                    <i class="fa fa-paste"></i> Sửa
+                                </a>
+                                <a *ngIf="isDelete" class="btn btn-danger"
+                                    (click)="openDeleteModalCusDepartment(templateDeleteCusDepartment, rowData)">
+                                    <i class="fa fa-trash-o"></i>
+                                    <span class="bold">Xóa</span>
+                                </a>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td [attr.colspan]="'3'">
+                                Không tìm thấy dữ liệu
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="summary">
+                        TỔNG CỘNG {{totalCusDepartment}}
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalRef.hide()">Đóng</button>
+    </div>
+</ng-template>
+<!-- End -->
+
+<ng-template #templateDeleteCusDepartment>
+    <div class="modal-header" style="padding: 5px; text-align:left;">
+        <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;"
+            (click)="bsModalRefDeleteCusDepartment.hide()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+    </div>
+    <div class="modal-body" style="overflow:hidden;">
+        <div class="col-md-12 no-padding">
+            <h4>Bạn có chắc chắn muốn xoá ?</h4>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger" (click)="deleteCusDepartment()">Xoá</button>
+        <button type="button" class="btn btn-white" data-dismiss="modal"
+            (click)="bsModalRefDeleteCusDepartment.hide()">Đóng</button>
+    </div>
+</ng-template>
+
+<!--Start Modal-->
+<ng-template #template>
+    <div class="modal-header" style="padding: 5px; text-align:left;">
+        <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;"
+            (click)="bsModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+        <h5 class="modal-title" style="font-size:20px">{{modalTitle}}</h5>
+    </div>
+    <div class="modal-body" style="overflow: auto;" *ngIf="data" (keydown)="keyDownFunction($event)">
+        <div class="col-md-12 no-padding">
+            <div class="form-group">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>Loại khách hàng <b>(*)</b></label>
+                                <p-dropdown styleClass="select-input form-control" [options]="customerTypes"
+                                    [(ngModel)]="selectedCustomerType" [style]="{'width':'100%'}" filter="filter"
+                                    (onChange)="customerCodeChange()" focus="true">
+                                </p-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>
+                                    <p-checkbox binary="true" [(ngModel)]="isInputCustomerCode" (onChange)="customerCodeChange()"></p-checkbox> 
+                                    {{customerCodeText}}</label>
+                                <input placeholder="{{customerCodeText}}" class="input-sm form-control" type="text"
+                                    id="customer_code" [(ngModel)]="data.code" [readonly]="!isInputCustomerCode" (change)="checkInfEmployee()">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>Tên đăng nhập <b>(*)</b></label>
+                                <input placeholder="Tài khoản đăng nhập" class="input-sm form-control" type="text"
+                                    [(ngModel)]="data.userName" [readonly]="!isInputCustomerCode">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>Mật khẩu <b>(*)</b></label>
+                                <input placeholder="Mật khẩu" class="input-sm form-control" type="password"
+                                    [(ngModel)]="data.passWord">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <label>Tên công ty / tên shop <b>(*)</b></label>
+                                <input [(ngModel)]="data.companyName" placeholder="Tên công ty / tên shop"
+                                    class="input-sm form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Điện thoại công ty</label>
+                                <input class="input-sm form-control" [(ngModel)]="data.companyPhone" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <label>Địa chỉ công ty - địa chỉ xuất hóa đơn<b>(*)</b></label>
+                                <input placeholder="Nhập địa chỉ CTY" type="text" class="input-sm form-control"
+                                    [(ngModel)]="data.addressCompany">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>Mã số thuế </label>
+                                <input placeholder="Mã số thuế" type="text" class="input-sm form-control"
+                                    [(ngModel)]="data.taxCode">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Ngày ký hợp đồng</label>
+                                <p-calendar class="input-sm" [(ngModel)]="data.startDate" [showIcon]="false"
+                                    dateFormat="yy/mm/dd" [showTime]="false"></p-calendar>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Ngày hết hạn hợp đồng</label>
+                                <p-calendar class="input-sm" [(ngModel)]="data.endDate" [showIcon]="false"
+                                    dateFormat="yy/mm/dd" [showTime]="false"></p-calendar>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Người ký hợp đồng</label>
+                                <input class="input-sm form-control" [(ngModel)]="data.signName" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label style="white-space: nowrap">Chức danh người ký</label>
+                                <input class="input-sm form-control" [(ngModel)]="data.signRole" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Email công ty</label>
+                                <input class="input-sm form-control" [(ngModel)]="data.companyEmail" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>% CK trên hóa đơn</label>
+                                <input [(ngModel)]="data.discount" placeholder="ckkh" class="input-sm form-control"
+                                    type="number">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>% CK tiền mặt/Chuyển khoản</label>
+                                <input class="input-sm form-control" [(ngModel)]="data.commissionCus" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>% hoa hồng NV</label>
+                                <input [(ngModel)]="data.commission" placeholder="% hoa hồng"
+                                    class="input-sm form-control" type="number">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>Họ & tên - xử lý hàng <b>(*)</b></label>
+                                <input placeholder="Tên" class="input-sm form-control" type="text"
+                                    [(ngModel)]="data.name">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>Điện thoại - xử lý hàng <b>(*)</b></label>
+                                <div class="input-group">
+                                    <input [(ngModel)]="txtPhoneNumber" class="input-sm form-control" type="text">
+                                    <span class="input-group-btn">
+                                        <a title="Gọi khách hàng" class="btn btn-info btn-bitbucket">
+                                            <i class="fa fa-phone"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>Email - xử lý hàng <b>(*)</b></label>
+                                <input [(ngModel)]="txtEmailAddress" placeholder="Email" class="input-sm form-control"
+                                    type="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>Toà nhà/ngõ ngách</label>
+                                <input [(ngModel)]="data.addressNote" placeholder="Toà nhà/ngõ ngách"
+                                    class="input-sm form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Địa chỉ lấy hàng <b>(*)</b></label>
+                                <input placeholder="Nhập địa chỉ" autocorrect="off" autocapitalize="off"
+                                    spellcheck="off" type="text" class="input-sm form-control" [id]="cusAddressId"
+                                    [(ngModel)]="data.address">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label>Hình thức thanh toán <b>(*)</b></label>
+                                <p-dropdown [options]="paymentTypes" [(ngModel)]="selectedPaymentType"
+                                    [style]="{'width':'100%'}" filter="true"></p-dropdown>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Tỉnh / thành <b>(*)</b></label>
+                                <p-dropdown styleClass="select-input form-control" [options]="provinces"
+                                    [(ngModel)]="selectedProvince" [style]="{'width':'100%'}" filter="filter"
+                                    [(ngModel)]="data.provinceId" (onChange)="changeProvince()">
+                                </p-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Quận / huyện <b>(*)</b></label>
+                                <p-dropdown styleClass="select-input form-control" [options]="districts"
+                                    [(ngModel)]="selectedDistrict" [style]="{'width':'100%'}" filter="filter"
+                                    [(ngModel)]="data.districtId" (onChange)="changeDistrict()">
+                                </p-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Phường / xã <b>(*)</b></label>
+                                <p-dropdown styleClass="select-input form-control" [options]="wards"
+                                    [(ngModel)]="selectedWard" [style]="{'width':'100%'}" filter="filter"
+                                    [(ngModel)]="data.wardId" (onChange)="changeWard()">
+                                </p-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>TT/CN/T nhận <b>(*)</b></label>
+                                <ng-select [items]="receiverHubs" bindLabel="label" bindValue="value" groupBy="group"
+                                    placeholder="-- Chọn TT/CC/T nhận --" clearable="false"
+                                    notFoundText="'Không có dữ liệu'" [(ngModel)]="selectedReceiverHub"
+                                    (change)="changeReceiverHub()">
+                                    <ng-template ng-optgroup-tmp let-item="item">
+                                        {{item.group}}
+                                    </ng-template>
+                                </ng-select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Nv kinh doanh</label>
+                                <p-autoComplete [inputStyle]="{'padding':'3px','font-weight':'normal','width':'84%'}"
+                                    (onSelect)="eventOnSelectedSalesUser()" [suggestions]="userSFilters"
+                                    [(ngModel)]="salesUserSelected" (completeMethod)="eventFilterSalesUsers($event)"
+                                    forceSelection="true" showIcon="false" [minLength]="1">
+                                    <ng-template let-data pTemplate="item">
+                                        <div>{{data}}</div>
+                                    </ng-template>
+                                </p-autoComplete>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Nv chăm sóc kh</label>
+                                <p-autoComplete [inputStyle]="{'padding':'3px','font-weight':'normal','width':'84%'}"
+                                    (onSelect)="eventOnSelectedSalesUser()" [suggestions]="userSPFilters"
+                                    [(ngModel)]="supportUserSelected" (completeMethod)="eventFilterSupportUsers($event)"
+                                    forceSelection="true" showIcon="false" [minLength]="1">
+                                    <ng-template let-data pTemplate="item">
+                                        <div>{{data}}</div>
+                                    </ng-template>
+                                </p-autoComplete>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Nv công nợ</label>
+                                <p-autoComplete [inputStyle]="{'padding':'3px','font-weight':'normal','width':'84%'}"
+                                    (onSelect)="eventOnSelectedAccountingUser()" [suggestions]="userAccFilters"
+                                    [(ngModel)]="accountingUserSelected"
+                                    (completeMethod)="eventFilterAccountingUsers($event)" forceSelection="true"
+                                    showIcon="false" [minLength]="1">
+                                    <ng-template let-data pTemplate="item">
+                                        <div>{{data}}</div>
+                                    </ng-template>
+                                </p-autoComplete>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Thuộc Công Ty?</label>
+                                <p-autoComplete (onSelect)="eventOnSelectedParentCustomer()"
+                                    [suggestions]="filteredParentCustomers" [(ngModel)]="selectedParentCustomer"
+                                    (completeMethod)="eventFilterParentCustomer($event)" forceSelection="true"
+                                    showIcon="false" [minLength]="1">
+                                </p-autoComplete>
+                            </div>
+                        </div>
+                    </div>
+                    <!--  -->
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label>Ghi chú [ghi chú này sẽ được in trên vận đơn của khách hàng]</label>
+                                <textarea [(ngModel)]="data.notes" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Mã kết nối <b>(*)</b></label>
+                                        <input [(ngModel)]="data.vseOracleCode" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalRef.hide()">Đóng</button>
+        <button type="button" class="btn btn-primary" (click)="save()">Lưu</button>
+    </div>
+</ng-template>
+
+<ng-template #templateDelete>
+    <div class="modal-header" style="padding: 5px; text-align:left;">
+        <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;"
+            (click)="bsModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+    </div>
+    <div class="modal-body" style="overflow:hidden;" *ngIf="data">
+        <div class="col-md-12 no-padding">
+            <h4>Bạn có chắc chắn muốn xoá
+                <b>&quot;{{data.name}}&quot;</b>?</h4>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalRef.hide()">Đóng</button>
+        <button type="button" class="btn btn-danger" (click)="delete()">Xoá</button>
+    </div>
+</ng-template>
+<ng-template #templateAccept>
+    <div class="modal-header" style="padding: 5px; text-align:left;">
+        <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;"
+            (click)="bsModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+    </div>
+    <div class="modal-body" style="overflow:hidden;" *ngIf="data">
+        <div class="col-md-12 no-padding">
+            <h4>Bạn có chắc chắn kích hoạt
+                <b>&quot;{{data.name}}&quot;</b>?</h4>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalRef.hide()">Đóng</button>
+        <button type="button" class="btn btn-danger" (click)="clickAccept(true, data)">Xác nhận</button>
+    </div>
+</ng-template>
+<!--End Modal-->

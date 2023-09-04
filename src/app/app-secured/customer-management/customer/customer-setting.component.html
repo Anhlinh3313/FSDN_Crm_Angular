@@ -1,0 +1,141 @@
+<div class="row">
+    <div class="col-lg-12">
+        <ol class="ibox-title breadcrumb">
+            <li>
+                <a>{{parentPage}}</a>
+            </li>
+            <li class="active">
+                <strong>{{currentPage}}</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12" style="padding-bottom: 20px;">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label>Khách hàng</label>
+                        <p-autoComplete (onSelect)="eventOnSelectedCustomer()" [suggestions]="filteredCustomers"
+                            [(ngModel)]="selectedCustomer" (completeMethod)="eventFilterCustomer($event)"
+                            forceSelection="true" [dropdown]="true" showIcon="false" [minLength]="1">
+                        </p-autoComplete>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label>Mẫu in vận đơn</label>
+                        <p-dropdown styleClass="select-input form-control" [options]="formPrints" [(ngModel)]="data.formPrintId"
+                            [style]="{'width':'100%'}" filter="filter">
+                        </p-dropdown>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div>
+                            <button *ngIf="isAdd" type="button" class="btn btn-primary" (click)="save()" tabindex="1">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12" style="padding-bottom: 20px;">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="label-warning" style="display:block;padding:3px 15px">Thanh toán sau cho khách hàng khác</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Thanh toán cho khách hàng</label>
+                        <p-autoComplete (onSelect)="eventOnSelectedPaymentTo()" [suggestions]="filteredPaymentTos"
+                            [(ngModel)]="selectedPaymentTo" (completeMethod)="eventFilterPaymentTo($event)"
+                            forceSelection="true" [dropdown]="true" showIcon="false" [minLength]="1">
+                        </p-autoComplete>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div>
+                            <button *ngIf="isAdd" type="button" class="btn btn-primary" (click)="savePaymentTo()"
+                                tabindex="1">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                </div>
+                <div class="col-sm-3"> <label>&nbsp;</label>
+                    <input placeholder="nhập mã tìm kiếm..." class="input-sm form-control" type="text" [(ngModel)]="searchValue"
+                        focus="true" (keyup.Enter)="loadDataSource()">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <p-table #dt [value]="datasource" [responsive]="true" [rows]="pageSize" [lazy]="true"
+                        [totalRecords]="totalRecords" dataKey="id" scrollable="true" scrollHeight="550px"
+                        [alwaysShowPaginator]="true" [paginator]="true" [rowsPerPageOptions]="[20,50,100]"
+                        (onPage)="onPageChange($event)">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="text-align: center; width: 50px;">#</th>
+                                <th class="p-col-normal" pSortableColumn="code">Mã khách hàng
+                                    <p-sortIcon field="code"></p-sortIcon>
+                                </th>
+                                <th class="p-col-note">Tên người đại diện</th>
+                                <th class="p-col-normal">Tên CTY</th>
+                                <th class="p-col-address">Địa chỉ [lấy hàng]</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-data>
+                            <tr>
+                                <td style="width: 50px;">
+                                    <a *ngIf="isDelete" class="btn btn-danger" (click)="openDeletePaymentToModel(templateDelete, data)">
+                                        <i class="fa fa-trash-o"></i>
+                                        <span class="bold">Xóa</span>
+                                    </a>
+                                </td>
+                                <td class="p-col-normal">{{data.paymentToCustomer.code}}</td>
+                                <td class="p-col-note">{{data.paymentToCustomer.name}}</td>
+                                <td class="p-col-normal">{{data.paymentToCustomer.companyName}}</td>
+                                <td class="p-col-address">{{data.paymentToCustomer.address}}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="summary">
+                            <span class="ui-column-title" style="font-weight: bold;">Tổng : {{ (totalRecords) ?
+                                totalRecords
+                                : 0}} khách hàng</span>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #templateDelete>
+    <div class="modal-header" style="padding: 5px; text-align:left;">
+        <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;" (click)="bsModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+    </div>
+    <div class="modal-body" style="overflow:hidden;" *ngIf="data">
+        <div class="col-md-12 no-padding">
+            <h4>Bạn có chắc chắn muốn xoá
+                <b>&quot;{{dataPaymentTo?.paymentToCustomer?.code}}&quot;</b>?</h4>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalRef.hide()">Đóng</button>
+        <button type="button" class="btn btn-danger" (click)="deletePaymentTo()">Xoá</button>
+    </div>
+</ng-template>

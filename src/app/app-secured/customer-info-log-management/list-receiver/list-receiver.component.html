@@ -1,0 +1,231 @@
+<div class="row">
+  <div class="col-lg-12">
+    <ol class="ibox-title breadcrumb">
+      <li>
+        <a>{{parentPage}}</a>
+      </li>
+      <li class="active">
+        <strong>{{currentPage}}</strong>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="ibox float-e-margins" style="padding-bottom: 50px">
+      <div class="ibox-title">
+        <div class="ibox-tools">
+          <p-header>
+            <div>
+              <button type="button" *ngIf="selectedCustomer" class="btn btn-primary pull-left"
+                (click)="openModelCreateOrUpdate(templateAddOrUpdate)">
+                <i class="fa fa-plus"></i>&nbsp;Tạo mới</button>
+              <button type="button" class="btn btn-success" (click)="refresh()">
+                <i class="fa fa-refresh"></i>&nbsp;refresh</button>
+            </div>
+          </p-header>
+        </div>
+      </div>
+
+      <div class="ibox-content">
+        <div class="row" style="margin-bottom: 15px;">
+          <div class="col-sm-3">
+            <label>Khách hàng</label>
+            <p-autoComplete [(ngModel)]="customer" [suggestions]="filteredCustomers" [minLength]="1"
+              (completeMethod)="filterCustomers($event)" (onSelect)="onSelectedCustomer()"
+              styleClass="select-input form-control none-padding" [dropdown]="true">
+            </p-autoComplete>
+          </div>
+          <div class="col-sm-6"></div>
+          <div class="col-sm-3">
+            <label>Tìm kiếm</label>
+            <div class="">
+              <input type="text" placeholder="..." [(ngModel)]="searchText" class="input-sm form-control" id="filter"
+                (change)="onSearchText()" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ibox-content">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="table-responsive">
+              <p-table #dt [value]="listCusInfoLog" [responsive]="true" [paginator]="true" [rows]="rowPerPage"
+                [rowsPerPageOptions]="[10,20,50,100]" (onPage)="onPageChange($event)" [lazy]="true"
+                [totalRecords]="totalRecords" (onLazyLoad)="loadLazy($event)" sortMode="single" [columns]="columns"
+                scrollHeight="200px" paginatorPosition="both" sortField="orderDate" sortOrder="-1">
+                <ng-template pTemplate="caption">
+                  <span class="ui-column-title" style="font-weight: bold;">Tổng:
+                    {{totalRecords}} KH nhận</span>
+                </ng-template>
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th pSortableColumn="stt" style="width: 40px;">STT
+                      <p-sortIcon field="stt"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="stt" style="width: 70px;">#
+                      <p-sortIcon field="stt"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="code" Class="p-col-normal">Mã KH nhận
+                      <p-sortIcon field="code"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="name" Class="p-col-normal">Tên KH nhận
+                      <p-sortIcon field="name"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="address" Class="p-col-address">Địa chỉ
+                      <p-sortIcon field="address"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="provinceName" Class="p-col-normal">Tỉnh/Thành
+                      <p-sortIcon field="provinceName"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="districtName" Class="p-col-normal">Quận/Huyện
+                      <p-sortIcon field="districtName"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="wardName" Class="p-col-normal">Phường/Xã
+                      <p-sortIcon field="wardName"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="addressNote" Class="p-col-address">Địa chỉ chi tiết
+                      <p-sortIcon field="addressNote"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="phoneNumber" Class="p-col-normal">Số đt
+                      <p-sortIcon field="phoneNumber"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="senderCode" Class="p-col-normal">Mã KH gửi
+                      <p-sortIcon field="senderCode"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="senderName" Class="p-col-address">Tên KH gửi
+                      <p-sortIcon field="senderName"></p-sortIcon>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-dataRow let-columns="columns" let-i="rowIndex">
+                  <tr [pSelectableRow]="dataRow">
+                    <td style="width: 40px;">
+                      {{i + 1}}
+                    </td>
+                    <td style="width: 70px;">
+                      <button type="button" *ngIf="selectedCustomer" class="btn btn-primary pull-left"
+                        (click)="openModelCreateOrUpdate(templateAddOrUpdate,dataRow)">
+                        <i class="fa fa-edit"></i>&nbsp;Sửa</button>
+                    </td>
+                    <td class="p-col-normal">
+                      {{dataRow.code}}
+                    </td>
+                    <td class="p-col-normal">
+                      {{dataRow.name}}
+                    </td>
+                    <td class="p-col-address">
+                      {{dataRow.address}}
+                    </td>
+                    <td class="p-col-normal">
+                      {{dataRow.provinceName}}
+                    </td>
+                    <td class="p-col-address one-row">
+                      {{dataRow.districtName}}
+                    </td>
+                    <td class="p-col-address one-row">
+                      {{dataRow.wardName}}
+                    </td>
+                    <td class="p-col-normal">
+                      {{dataRow.phoneNumber}}
+                    </td>
+                    <td class="p-col-address">
+                      {{dataRow.addressNote}}
+                    </td>
+                    <td class="p-col-normal">
+                      {{dataRow.senderCode}}
+                    </td>
+                    <td class="p-col-address one-row">
+                      {{dataRow.senderName}}
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="summary">
+                  <span class="ui-column-title" style="font-weight: bold;">Tổng:
+                    {{totalRecords}} KH nhận</span>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--Start Modal-->
+<ng-template #templateAddOrUpdate>
+  <div class="modal-header" style="padding: 5px; text-align:left;">
+    <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;" (click)="bsModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+      <span class="sr-only">Close</span>
+    </button>
+    <h5 class="modal-title" style="font-size:20px">{{modalTitleAddOrUpate}}</h5>
+  </div>
+  <div class="modal-body" style="overflow: unset;" *ngIf="data">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label>Mã người nhận <b>(*)</b></label>
+            <input [(ngModel)]="data.code" placeholder="Mã người nhận" class="input-sm form-control" type="text"
+              required>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label>Tên người nhận <b>(*)</b></label>
+            <input placeholder="Tên người nhận" class="input-sm form-control" type="text" [(ngModel)]="data.name">
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label>Điện thoại</label>
+            <input [(ngModel)]="data.phoneNumber" class="input-sm form-control" type="text">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="form-group">
+            <label>Địa chỉ nhận hàng <b>(*)</b></label>
+            <input placeholder="Nhập địa chỉ" type="text" class="input-sm form-control" [(ngModel)]="data.address">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label>Tỉnh / thành <b>(*)</b></label>
+            <p-dropdown styleClass="select-input form-control" [options]="provinces" [style]="{'width':'100%'}"
+              filter="filter" [(ngModel)]="data.provinceId" (onChange)="changeProvince()">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label>Quận / huyện <b>(*)</b></label>
+            <p-dropdown styleClass="select-input form-control" [options]="districts" [style]="{'width':'100%'}"
+              filter="filter" [(ngModel)]="data.districtId" (onChange)="changeDistrict()">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label>Phường / xã <b>(*)</b></label>
+            <p-dropdown styleClass="select-input form-control" [options]="wards" [style]="{'width':'100%'}"
+              filter="filter" [(ngModel)]="data.wardId">
+            </p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalRef.hide()">Đóng</button>
+    <button type="button" class="btn btn-primary" (click)="createOrUpdate()">Lưu</button>
+  </div>
+</ng-template>

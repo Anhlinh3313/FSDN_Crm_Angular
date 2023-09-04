@@ -1,0 +1,67 @@
+<nav class="navbar-default navbar-static-side" role="navigation" id="left-sidebar" style="border-bottom: 1px solid #fff;">
+    <div class="sidebar-collapse">
+        <ul class="nav metismenu" id="side-menu" style="margin-bottom: 35px;">
+            <li class="nav-header m-nav-header" style="background: #000000;padding: 0px">
+                <div class="dropdown profile-elemen m-profile-elemen">
+                    <span>
+                        <img alt="image" class="img-circle" [src]="logo" />
+                    </span>
+                </div>
+                
+                <div class="logo-element">
+                    IN+ 
+                </div>
+            </li>
+            <!-- <li class="active">
+                <a routerLink="">
+                    <i class="fa fa-th-large"></i>
+                    <span class="nav-label">Dashboards</span>
+                </a>
+            </li>
+            <li>
+                <a routerLink="/thay-doi-mat-khau">
+                    <i class="fa fa-circle-o"></i>
+                    <span class="nav-label">Thay đổi mật khẩu</span>
+                </a>
+            </li>
+            <li>
+                <a>
+                    <i class="fa fa-handshake-o"></i>
+                    <span class="nav-label">Quản lý khách hàng</span>
+                    <span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level collapse">
+                    <li>
+                        <a routerLink="/quan-ly-khach-hang/khach-hang">
+                            <i class="fa fa-circle-o"></i>
+                            <span class="nav-label">Khách hàng</span>
+                        </a>
+                    </li>
+                </ul>
+            </li> -->
+            <li id="daddy" *ngFor="let page of pages" [class]="page.active" (click)="selectNav(page)">
+                <!-- <a routerLink="{{page.aliasPath}}" *ngIf="!page.parentPageId && page.children.length === 0 && page.aliasPath != '/thay-doi-mat-khau'">
+                    <i class="{{page.icon ? page.icon : 'fa fa-th-large'}}"></i>
+                    <span class="nav-label">{{page.name}}</span>
+                </a> -->
+                <a *ngIf="!page.parentPageId && page.children.length > 0" (click)="showItems($event,page)">
+                    <i class="{{page.icon ? page.icon : 'fa fa-circle-o'}}" aria-expanded="true"></i>
+                    <span *ngIf="(totalListNotAccept == 0 && page.aliasPath=='/quan-ly-khach-hang') || page.aliasPath!='/quan-ly-khach-hang'" class="nav-label">{{page.name}}</span>
+                    <span *ngIf="totalListNotAccept > 0  && page.aliasPath=='/quan-ly-khach-hang'" class="nav-label menu-with-number">{{page.name}}
+                        <span class="number" style="color:#fff">{{totalListNotAccept}}</span>
+                    </span>
+                    <span class="fa arrow"></span>
+                </a>
+                <ul [style.display]="page.display" class="nav nav-second-level collapse in" aria-expanded="true">
+                    <li id="son" *ngFor="let child of page.children">
+                        <a routerLink="{{child.aliasPath}}">
+                            <i class="{{child.icon ? child.icon : 'fa fa-square'}}"></i>
+                            <span *ngIf="totalListNotAccept == 0 || child.aliasPath!='/quan-ly-khach-hang/khach-hang'" class="nav-label">{{child.name}}</span>
+                            <span *ngIf="totalListNotAccept > 0 && child.aliasPath=='/quan-ly-khach-hang/khach-hang'" class="nav-label">{{child.name}} ({{totalListNotAccept}})</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
